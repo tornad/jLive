@@ -11,7 +11,7 @@ This is what we called the **one way workflow**.
 
 # One way workflow
 
-![](jlive-schema.png)
+![](docs/jlive-schema.png)
 
 # JADE sample
     script
