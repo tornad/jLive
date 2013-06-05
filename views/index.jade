@@ -1,0 +1,63 @@
+!!!5
+html
+  head
+    title demo
+    link(rel='stylesheet', href='/bootstrap.min.css')
+    script(src='/jquery-1.9.1.min.js')
+    script(src='/underscore-min.js')
+    script(src='/backbone-min.js')
+    script(src='/smart-2.9.min.js')
+    script(src='/handlebars.js')
+    script(src='/json2.js')
+    script(src='/jlive-0.0.1.js')
+       
+  body
+    .templatejLive(style="display:none")
+      {{#each me}}
+      div.box-section.news.with-icons {{name}} - Frequence : {{frequency}}
+      div.news-time
+        span {{datelaststate}}
+      div.news-content
+        div.news-title
+          a(href='#') {{name}}
+        div.news-text
+          | {{param}}
+      {{/each}}
+
+    .container-narrow
+      .row-fluid
+        .row
+          .span12
+            ul(class="nav nav-pills pull-right")
+              li
+                a(href="/") Home
+              li
+                a(href="/about") About
+
+        .row
+          .span12
+            .div #{title}
+            hr
+
+        .row
+         .span9
+          .viewRendererJLive
+
+         .span3
+          button.btn.btn-primary(style="margin:10px",onclick="sondeList.url='/sample-allsondes.json';sondeList.fetch()") /allsondes.json
+          br
+          button.btn.btn-primary(style="margin:10px",onclick="sondeList.url='/sample-sonde1.json';sondeList.fetch()") /sonde1.json
+          br
+          button.btn.btn-primary(style="margin:10px",onclick="sondeList.url='/sample-sonde2.json';sondeList.fetch()") /sonde2.json
+
+
+
+    script
+      //one.fetch();
+      var sondeList =  new jLive('/sample-allsondes.json')
+        .setTemplate('.templatejLive')
+        .setLayout('.viewRendererJLive');
+
+      sondeList.fetch({});
+
+
