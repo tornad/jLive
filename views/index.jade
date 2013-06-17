@@ -6,23 +6,22 @@ html
     script(src='/jquery-1.9.1.min.js')
     script(src='/underscore-min.js')
     script(src='/backbone-min.js')
-    script(src='/smart-2.9.min.js')
     script(src='/handlebars.js')
     script(src='/json2.js')
     script(src='/jlive-0.0.1.js')
        
   body
-    .templatejLive(style="display:none")
+    .template_GitList(style="display:none")
       {{#each me}}
-      div.box-section.news.with-icons {{name}} - Frequence : {{frequency}}
-      div.news-time
-        span {{datelaststate}}
-      div.news-content
-        div.news-title
-          a(href='#') {{name}}
-        div.news-text
-          | {{param}}
-      {{/each}}
+      div
+          span.pull-right.label{{payload.action}}
+          img(src='{{actor.avatar_url}}',width=64,height=64)
+          div {{id}} - {{repo.name}}
+          a(href='https://github.com/{{repo.name}}',target="_blank") https://github.com/{{repo.name}}
+          | {{payload.title}}
+          p
+      {{/each}}      
+
 
     .container-narrow
       .row-fluid
@@ -37,7 +36,16 @@ html
         .row
           .span12
             .div #{title}
+            button.btn.btn-primary(onclick="gitList.fetch({});") Actualiser
             hr
+
+        .row
+          .span6
+            .viewRenderGitList
+            hr
+          .span6
+            .viewRenderGitList2
+              span Loading
 
         .row
          .span9
@@ -54,10 +62,69 @@ html
 
     script
       //one.fetch();
-      var sondeList =  new jLive('/sample-allsondes.json')
+      /*var sondeList =  new jLive('/sample-allsondes.json')
         .setTemplate('.templatejLive')
         .setLayout('.viewRendererJLive');
+      */
+      var gitList = new jLive('https://api.github.com/events')
+        .setTemplate('.template_GitList')
+        .setLayout('.viewRenderGitList');
 
-      sondeList.fetch({});
+      //sondeList.fetch({});
+
+      gitList.fetch({});
 
 
+      myCollectionView = Backbone.View.extend({
+          initialize: function(){
+              self = this;
+              this.collection.on('add',function(){
+                self.render();
+              })
+              this.collection.on('add',function(model, collection, options) {
+                console.log("adding "+model.cid+" name :" +model.attributes.name);
+              });
+
+              this.collection.on('add',function(model, collection, options) {
+                self.render();
+              });        
+                          
+              this.collection.on('remove',function(model, collection, options) {
+                console.log("removing "+model.attributes.name);
+              });
+              
+              this.collection.on('remove',function(model, collection, options) {
+                self.render();
+              });
+
+              this.collection.on('reset',function(collection, options) {
+                self.render();
+              });              
+
+              this.render();
+              console.log(this.collection);
+          },
+          render: function(){
+              this.template = _.template( $(".template_GitList").html(), {} );
+              var tpl = Handlebars.compile(this.template);
+              var htmlres = tpl( { me: this.collection.toJSON() } )
+              $(this.el).html(htmlres);
+              return this;          
+          },
+          events: {
+              "click": "doSearch"  
+          },
+          doSearch: function(){
+              // Button clicked
+              console.log(this);
+          }
+      });
+      
+      var myView = new myCollectionView({ 
+        el: $(".viewRenderGitList2") 
+        ,collection: gitList
+      });
+      
+      /*gitList.on('add',function(){
+        myView.render();
+      })*/
