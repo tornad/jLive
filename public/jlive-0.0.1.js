@@ -10,18 +10,13 @@ function jLive(url) {
             var bkobj = new Backbone.Collection();
 
             bkobj.url  = url;
-            
-            bkobj.on('add',function(model, collection, options) {
-                console.log("adding "+model.cid+" name :" +model.attributes.name);
-            });
+
 
             bkobj.on('add',function(model, collection, options) {
                 collection.render();
             });        
                         
-            bkobj.on('remove',function(model, collection, options) {
-               console.log("removing "+model.attributes.name);
-            });
+
             
             bkobj.on('remove',function(model, collection, options) {
                 collection.render();
@@ -59,6 +54,99 @@ function jLive(url) {
 };
 
 
+
+myCollectionView = Backbone.View.extend({
+    initialize: function(){
+        self = this;
+        this.collection.on('add',function(model, collection, options) {
+          self.render();
+        });        
+        this.collection.on('remove',function(model, collection, options) {
+          self.render();
+        });
+        this.collection.on('reset',function(collection, options) {
+          self.render();
+        });              
+    },
+    render: function(){
+        var tpl = Handlebars.compile(this.template);
+        var htmlres = tpl( { me: this.collection.toJSON() } )
+        $(this.el).html(htmlres);
+        return this;          
+    },
+});
+
+
+function jLive2(url) {
+            
+            var bkobj = new Backbone.Collection();
+            bkobj.url  = url;
+            bkobj.reset({});
+            
+            bkobj.collectionView = new myCollectionView({ 
+              collection: bkobj
+            });
+
+            bkobj.setTemplate = function(element) {
+                console.log(typeof(element));
+                // We get template from element and store it
+                this.collectionView.template = $(element).html();
+                this.element = element;
+                
+                // Until setLayout is not fixed we use the template as layout after having backuped it in this.template
+                this.layout = element;
+                return this;
+            }
+
+            bkobj.setLayout = function(layout) {
+                this.collectionView.el = $(layout);
+                return this;
+            }
+
+            bkobj.render = function() {
+              this.collectionView.render();
+            }
+
+            return bkobj;
+
+};
+
+
+
+
+function jLiveView(url) {
+            
+            var bkobj = new Backbone.Collection();
+            bkobj.url  = url;
+            bkobj.reset({});
+            
+            bkobj.collectionView = new myCollectionView({ 
+              collection: bkobj
+            });
+
+            bkobj.setTemplate = function(element) {
+                console.log(typeof(element));
+                // We get template from element and store it
+                this.collectionView.template = $(element).html();
+                this.element = element;
+                
+                // Until setLayout is not fixed we use the template as layout after having backuped it in this.template
+                this.layout = element;
+                return this;
+            }
+
+            bkobj.setLayout = function(layout) {
+                this.collectionView.el = $(layout);
+                return this;
+            }
+
+            bkobj.render = function() {
+              this.collectionView.render();
+            }
+
+            return bkobj;
+
+};
 // backbone.datagrid v0.3.2
 //
 // Copyright (c) 2012 Loïc Frering <loic.frering@gmail.com>

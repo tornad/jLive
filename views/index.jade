@@ -22,7 +22,15 @@ html
           p
       {{/each}}      
 
-
+    .template_line(style="display:none")
+      div
+          span.pull-right.label{{payload.action}}
+          img(src='{{actor.avatar_url}}',width=64,height=64)
+          div {{id}} - {{repo.name}}
+          a(href='https://github.com/{{repo.name}}',target="_blank") https://github.com/{{repo.name}}
+          | {{payload.title}}
+          p
+      
     .container-narrow
       .row-fluid
         .row
@@ -40,6 +48,10 @@ html
             hr
 
         .row
+          .span12
+            .div #{title}
+
+        .row
           .span6
             .viewRenderGitList
             hr
@@ -51,16 +63,8 @@ html
          .span9
           .viewRendererJLive
 
-         .span3
-          button.btn.btn-primary(style="margin:10px",onclick="sondeList.url='/sample-allsondes.json';sondeList.fetch()") /allsondes.json
-          br
-          button.btn.btn-primary(style="margin:10px",onclick="sondeList.url='/sample-sonde1.json';sondeList.fetch()") /sonde1.json
-          br
-          button.btn.btn-primary(style="margin:10px",onclick="sondeList.url='/sample-sonde2.json';sondeList.fetch()") /sonde2.json
 
-
-
-    script
+    script.
       //one.fetch();
       /*var sondeList =  new jLive('/sample-allsondes.json')
         .setTemplate('.templatejLive')
@@ -70,61 +74,20 @@ html
         .setTemplate('.template_GitList')
         .setLayout('.viewRenderGitList');
 
-      //sondeList.fetch({});
+      //sondeList.fetch({});      
+      
+      var gitList2 = new jLive2('https://api.github.com/events')
+        .setTemplate('.template_GitList')
+        .setLayout('.viewRenderGitList2');
+      
+
+      gitList2.fetch({});
+      
+      /*
+      var view1 = new BackBone.jLiveView({
+        collection : gitList
+        ,template: '.template_GitList'
+        ,target: '.viewRenderGitList2'
+      }):*/
 
       gitList.fetch({});
-
-
-      myCollectionView = Backbone.View.extend({
-          initialize: function(){
-              self = this;
-              this.collection.on('add',function(){
-                self.render();
-              })
-              this.collection.on('add',function(model, collection, options) {
-                console.log("adding "+model.cid+" name :" +model.attributes.name);
-              });
-
-              this.collection.on('add',function(model, collection, options) {
-                self.render();
-              });        
-                          
-              this.collection.on('remove',function(model, collection, options) {
-                console.log("removing "+model.attributes.name);
-              });
-              
-              this.collection.on('remove',function(model, collection, options) {
-                self.render();
-              });
-
-              this.collection.on('reset',function(collection, options) {
-                self.render();
-              });              
-
-              this.render();
-              console.log(this.collection);
-          },
-          render: function(){
-              this.template = _.template( $(".template_GitList").html(), {} );
-              var tpl = Handlebars.compile(this.template);
-              var htmlres = tpl( { me: this.collection.toJSON() } )
-              $(this.el).html(htmlres);
-              return this;          
-          },
-          events: {
-              "click": "doSearch"  
-          },
-          doSearch: function(){
-              // Button clicked
-              console.log(this);
-          }
-      });
-      
-      var myView = new myCollectionView({ 
-        el: $(".viewRenderGitList2") 
-        ,collection: gitList
-      });
-      
-      /*gitList.on('add',function(){
-        myView.render();
-      })*/
