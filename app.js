@@ -16,5 +16,5 @@ app.get('/', function(req, res){
  res.render('index', { title: 'Express' })
 });
 
-app.listen(3001);
+app.listen(3000);
 console.log("Express server listening on port 3000");
